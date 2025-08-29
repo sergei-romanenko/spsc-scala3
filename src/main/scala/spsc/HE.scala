@@ -14,7 +14,8 @@ object HE {
 
   private def heByCoupling: (Term, Term) => Boolean = {
     case (e1:CFG, e2:CFG) if shallowEq(e1, e2) =>
-      (e1.args, e2.args).zipped.forall(embeddedIn)
+      // (e1.args, e2.args).zipped.forall(embeddedIn)
+      e1.args.lazyZip(e2.args).forall(embeddedIn)
     case (Var(_), Var(_)) => true
     case _ => false
   }

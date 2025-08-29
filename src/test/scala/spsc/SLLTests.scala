@@ -1,9 +1,8 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 
-
-class SLLTests extends FunSuite {
+class SLLTests extends AnyFunSuite {
 
   def assertToStr(t: Term, s: String): Unit = {
     assert(t.toString === s)

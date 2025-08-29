@@ -1,9 +1,9 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.SLLParsers.{parseTask, parseTerm}
 
-class BasicTreeBuilderTests extends FunSuite {
+class BasicTreeBuilderTests extends AnyFunSuite {
 
   def varAttackTrue(s: String): Unit = {
     val term = parseTerm(s)
@@ -29,8 +29,8 @@ class BasicTreeBuilderTests extends FunSuite {
   val pAddAcc = "gAddAcc(Z,y)=y;gAddAcc(S(x),y)=gAddAcc(x,S(y));"
 
   def drStep(rules: String, t: String, expected: String): Unit = {
-    val given = t + " where " + rules
-    drStep0(parseTask(given), expected)
+    val `given` = t + " where " + rules
+    drStep0(parseTask(`given`), expected)
   }
 
   def drStep0(task: Task, expected: String): Unit = {

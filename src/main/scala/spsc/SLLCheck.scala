@@ -24,10 +24,10 @@ class SLLCheck(val task: Task) {
 
   val fNames: List[Name] = fRules.map(_.name)
   val gNames: List[Name] = gRules.map(_.name)
-  val hNames: List[Name] = fNames union gNames
+  val hNames: List[Name] = fNames concat gNames
   val fParams: List[Name] = fRules.flatMap(_.params)
   val gParams: List[Name] = gRules.flatMap(_.allParams)
-  val pNames: List[Name] = vTerm(task.term) union (fParams union gParams)
+  val pNames: List[Name] = vTerm(task.term) concat (fParams concat gParams)
 
   // Disjointness of name sets.
 

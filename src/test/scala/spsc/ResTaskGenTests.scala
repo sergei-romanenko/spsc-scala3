@@ -1,9 +1,9 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.SLLParsers.parseTask
 
-class ResTaskGenTests extends FunSuite {
+class ResTaskGenTests extends AnyFunSuite {
 
   def runBScp(t: String, p: String): String = {
     val input = t + " where " + p

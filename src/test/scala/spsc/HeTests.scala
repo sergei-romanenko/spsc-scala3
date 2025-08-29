@@ -1,10 +1,10 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.HE._
 import spsc.SLLParsers.parseTerm
 
-class HeTests extends FunSuite {
+class HeTests extends AnyFunSuite {
 
   def heTrue(t1: String, t2: String): Unit = {
     val term1 = parseTerm(t1)

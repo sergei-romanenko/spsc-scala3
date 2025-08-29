@@ -34,6 +34,7 @@ class ResTaskGen(val tree: Tree) {
       case Ctr(name, _) => Ctr(name, n.children.map(tree(_)).map(walk))
       case FCall(name, args) => walkCall(n, name, args)
       case GCall(name, args) => walkCall(n, name, args)
+      case CFG(_, _, _) => throw new MatchError("walk")
     } else {
       val q = fa.get
       val (name, args) = sigs(q.nodeId)

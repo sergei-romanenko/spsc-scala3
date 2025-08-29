@@ -1,10 +1,10 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.Algebra._
 import spsc.SLLParsers.parseTerm
 
-class AlgebraTests extends FunSuite {
+class AlgebraTests extends AnyFunSuite {
 
   test(testName = "101 shellEq") {
     assert(shallowEq(Ctr("A", Nil), Ctr("A", Nil)))

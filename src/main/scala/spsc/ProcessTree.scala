@@ -38,19 +38,19 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
 
   // Enumerating nodes.
 
-  def nodesAcc(node: Node, acc: Stream[Node]): Stream[Node] = {
+  def nodesAcc(node: Node, acc: LazyList[Node]): LazyList[Node] = {
     val children = node.children.map(getNode)
     node #:: children.foldRight(acc) (nodesAcc)
   }
 
-  def nodes: Stream[Node] =
-    nodesAcc(getNode(0), Stream.empty)
+  def nodes: LazyList[Node] =
+    nodesAcc(getNode(0), LazyList.empty)
 
-  def leaves: Stream[Node] =
+  def leaves: LazyList[Node] =
   //nodes.filter(_.children.isEmpty)
-    getNode.values.filter(_.children.isEmpty).toStream
+    LazyList.from(getNode.values.filter(_.children.isEmpty))
 
-  def funcNodes: Stream[Node] = leaves.flatMap(_.back match {
+  def funcNodes: LazyList[Node] = leaves.flatMap(_.back match {
     case None => Nil
     case Some(bId) => List(getNode(bId))
   })
@@ -69,25 +69,25 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
 
   // Finding ancestors.
 
-  def ancestors(n: Node): Stream[Node] = getParent(n) match {
-    case None => Stream.empty
+  def ancestors(n: Node): LazyList[Node] = getParent(n) match {
+    case None => LazyList.empty
     case Some(p) => p #:: ancestors(p)
   }
 
   def findFuncAncestor(n: Node): Option[Node] =
     ancestors(n).find(m => isFGCall(m.term) && equiv(n.term, m.term))
 
-  def localAncestors(n: Node): Stream[Node] = getParent(n) match {
-    case None => Stream.empty
+  def localAncestors(n: Node): LazyList[Node] = getParent(n) match {
+    case None => LazyList.empty
     case Some(p) =>
       if (aVarIsUnderAttack(p.term))
-        Stream.empty
+        LazyList.empty
       else
         p #:: localAncestors(p)
   }
 
-  def globalAncestors(n: Node): Stream[Node] = getParent(n) match {
-    case None => Stream.empty
+  def globalAncestors(n: Node): LazyList[Node] = getParent(n) match {
+    case None => LazyList.empty
     case Some(p) =>
       if (aVarIsUnderAttack(p.term))
         p #:: globalAncestors(p)
@@ -113,7 +113,7 @@ case class Tree(freeId: NodeId, getNode: NodeMap) {
 
   def subnodeIds(n: Node): Set[NodeId] = {
     val chIdSet = n.children.toSet
-    val subIdSets = n.children.map(getNode andThen subnodeIds)
+    val subIdSets = n.children.map(getNode andThen subnodeIds _)
     subIdSets.foldLeft(chIdSet) (_.union(_))
   }
 

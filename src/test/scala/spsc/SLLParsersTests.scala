@@ -1,9 +1,9 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.SLLParsers.parseTerm
 
-class SLLParsersTests extends FunSuite {
+class SLLParsersTests extends AnyFunSuite {
 
   def pTerm(g: String, e: String): Unit = {
     assert(parseTerm(g).toString == e)

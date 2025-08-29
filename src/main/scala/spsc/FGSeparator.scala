@@ -14,6 +14,7 @@ case class FGSeparator(isGName: Name => Boolean) {
     case FCall(name, args) =>
       val args1 = args.map(fgSepTerm)
       if (isGName(name)) GCall(name, args1) else FCall(name, args1)
+    case _ => throw new MatchError("fgSepTerm")
   }
 
   def fgSepRule: Rule => Rule = {

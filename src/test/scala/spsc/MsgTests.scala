@@ -1,9 +1,9 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.SLLParsers.parseTerm
 
-class MsgTests extends FunSuite {
+class MsgTests extends AnyFunSuite {
 
   def msgOK(t1: String, t2: String, expected: String): Unit = {
     val ng = new NameGen(Seq())

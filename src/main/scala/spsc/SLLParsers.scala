@@ -66,6 +66,7 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
           s"(line ${next.pos.line}, column ${next.pos.column}):\n" +
           s"$err\n${next.pos.longString}"
         sys.error(msg)
+      case _ => throw new MatchError("runParser")
     }
   }
 

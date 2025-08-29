@@ -1,9 +1,9 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.Tree._
 
-class ProcessTreeTests extends FunSuite {
+class ProcessTreeTests extends AnyFunSuite {
 
   def testTree: Tree = {
     val c = Contraction("a", Pat("b", List("b1", "b2")))

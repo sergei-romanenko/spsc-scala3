@@ -66,6 +66,7 @@ class BasicTreeBuilder(task: Task) {
         for ((t, c) <- bs) yield
           (GCall(name, t :: args.map(applyContr(c))), c)
     }
+    case _ => throw new MatchError("driveTerm")
   }
 
   // -- The basic build step.

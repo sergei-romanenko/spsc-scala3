@@ -1,10 +1,10 @@
 package spsc
 
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import spsc.SLLCheck.checkTask
 import spsc.SLLParsers.parseTask
 
-class SLLCheckTests extends FunSuite {
+class SLLCheckTests extends AnyFunSuite {
 
   def chTaskOK(g: String): Unit = {
     val task = parseTask(g)
