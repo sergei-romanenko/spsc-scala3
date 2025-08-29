@@ -7,22 +7,19 @@ import spsc.SLLParsers._
 import spsc.SLLCheck._
 import spsc.PrettyPrinter._
 
-object Main extends App {
+object Main extends App:
 
-  def wrStr(path: String, str: String): Unit = {
+  def wrStr(path: String, str: String): Unit =
     val pw = new PrintWriter(new File(path))
-    try {
+    try
       pw.write(str)
-    } finally {
+    finally
       pw.close()
-    }
-  }
 
-  try {
-    if (args.length != 1) {
+  try
+    if args.length != 1 then
       println("Usage: spsc-scala taskname")
       System.exit(1)
-    }
     val taskName = args.head
     val pathTask = taskName + ".task"
     val pathTree = taskName + ".tree"
@@ -31,12 +28,11 @@ object Main extends App {
     val strTask: String = Source.fromFile(pathTask).mkString
     println("* Task read from " + pathTask)
     val task: Task = parseTask(strTask)
-    checkTask(task) match {
+    checkTask(task) match
       case Some(msg) =>
         println(msg)
         System.exit(1)
       case None =>
-    }
     val builder = new AdvancedTreeBuilder(task)
     val tree = builder.buildProcessTree()
     wrStr(pathTree, ppTree(tree))
@@ -45,9 +41,7 @@ object Main extends App {
     val resTask = rpg.buildResTask()
     wrStr(pathRes, ppTask(resTask))
     println("* Output written to " + pathRes)
-  } catch {
+  catch
     case e: Exception =>
       println(e.getMessage)
       System.exit(1)
-  }
-}

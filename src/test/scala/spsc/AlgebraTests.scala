@@ -35,8 +35,8 @@ class AlgebraTests extends AnyFunSuite {
   }
 
   def substToString(os: Option[Subst]): Option[String] =
-    for (subst <- os) yield {
-      (for ((n, t) <- subst) yield s"$n->$t;").mkString("")
+    for subst <- os yield {
+      (for (n, t) <- subst yield s"$n->$t;").mkString("")
     }
 
   def matchOK(pat: String, term: String, expected: String): Unit = {

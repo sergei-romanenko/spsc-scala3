@@ -40,7 +40,7 @@ class BasicTreeBuilderTests extends AnyFunSuite {
     val branches = builder.driveTerm(term)
     val branches_s = (branches map { case (exp, oc) =>
       "(" + exp.toString + "," +
-        (if (oc.isEmpty) "*" else oc.get.toString) + ")"
+        (if oc.isEmpty then "*" else oc.get.toString) + ")"
     }).mkString("+")
     assert(branches_s == expected)
   }

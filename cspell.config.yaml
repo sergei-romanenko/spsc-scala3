@@ -3,8 +3,10 @@ ignorePaths: []
 dictionaryDefinitions: []
 dictionaries: []
 words:
+  - arities
   - cargs
   - combinators
+  - Disjointness
   - fargs
   - gname
   - msgen
@@ -14,5 +16,7 @@ words:
   - scalactic
   - scalatest
   - spsc
+  - supercompiler
+  - Symb
 ignoreWords: []
 import: []

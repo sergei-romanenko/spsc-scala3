@@ -3,7 +3,7 @@ package spsc
 import org.typelevel.paiges.Doc
 import org.typelevel.paiges.Doc._
 
-object PrettyPrinter {
+object PrettyPrinter:
 
   // Pretty printing tasks.
 
@@ -24,38 +24,33 @@ object PrettyPrinter {
 
   def docNode(tree: Tree, node: Node): Doc =
     docContr(node.contr) +
-      (if (node.parent.isEmpty) Doc.empty else Doc.line) +
+      (if node.parent.isEmpty then Doc.empty else Doc.line) +
       Doc.str(node.nodeId) + Doc.text(str = " : ") + Doc.str(node.term) +
       docBack(tree, node) +
       docChildren(tree, node).nested(amount = 4)
 
   def docBack(tree: Tree, node: Node): Doc =
-    node.back match {
+    node.back match
       case None => Doc.empty
       case Some(bId) =>
         Doc.line + Doc.text(str = "--> ") + Doc.str(bId)
-    }
 
-  def docContr: Option[Contraction] => Doc = {
+  def docContr: Option[Contraction] => Doc =
     case None =>
       Doc.empty
     case Some(c) =>
       Doc.line + Doc.text(str = "{") +
         Doc.text(c.n) + Doc.text(str = " = ") + Doc.str(c.pat) +
         Doc.text(str = "}")
-  }
 
-  def docChildren(tree: Tree, node: Node): Doc = {
+  def docChildren(tree: Tree, node: Node): Doc =
     val ns = node.children.map(tree(_))
-    if (ns.isEmpty)
+    if ns.isEmpty then
       Doc.empty
-    else {
+    else
       Doc.line +
-        Doc.intercalate(Doc.line, for (n <- ns) yield docNode(tree, n))
-    }
-  }
+        Doc.intercalate(Doc.line, for n <- ns yield docNode(tree, n))
 
   def ppTree(tree: Tree): String =
     docTree(tree).render(width = 80)
 
-}
