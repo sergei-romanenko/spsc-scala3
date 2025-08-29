@@ -48,7 +48,7 @@ class ResTaskGen(val tree: Tree) {
 
   def walkCall(n: Node, name: Name, args: List[Term]): Term = {
     val ns = termVars(n.term)
-    val vs = ns.map(Var)
+    val vs = ns.map((Var.apply))
     if (tree(n.children.head).contr.isDefined) {
       val (gname, _) =
         sigs.getOrElseUpdate(n.nodeId, (ng.freshName(name), vs))

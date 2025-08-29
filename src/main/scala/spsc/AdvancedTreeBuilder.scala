@@ -14,7 +14,7 @@ class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task) {
     (n.term: @unchecked) match {
       case term: CFG =>
         val ns = term.args.map(_ => ng.freshName(prefix = "v"))
-        val term1 = term.copy(args = ns.map(Var))
+        val term1 = term.copy(args = ns.map(Var.apply))
         val bs = ns.zip(term.args)
         t.decompose(n, term1, bs)
 

@@ -1,6 +1,6 @@
-scalaVersion := "2.13.16"
+scalaVersion := "3.7.2"
 
-name := "spsc-scala"
+name := "spsc-scala3"
 
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0"
 

@@ -11,7 +11,7 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
   override val whiteSpace: Regex = """(\s|--.*)+""".r
 
   def task: SLLParsers.Parser[Task] =
-    term ~ ("where" ~> rules) ^^ Task
+    term ~ ("where" ~> rules) ^^ Task.apply
 
   def rules: SLLParsers.Parser[List[Rule]] =
     rep(definition)
@@ -29,7 +29,7 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
     """[a-z]\w*""".r
 
   def vrb: SLLParsers.Parser[Var] =
-    lid ^^ Var
+    lid ^^ Var.apply
 
   def patParams: SLLParsers.Parser[List[String]] =
     opt("(" ~> repsep(lid, ",") <~ ")") ^^ {
@@ -37,13 +37,13 @@ object SLLParsers extends RegexParsers with ImplicitConversions {
     }
 
   def pat: SLLParsers.Parser[Pat] =
-    uid ~ patParams ^^ Pat
+    uid ~ patParams ^^ Pat.apply
 
   def fRule: SLLParsers.Parser[FRule] =
-    lid ~ ("(" ~> repsep(lid, ",") <~ ")") ~ ("=" ~> term <~ ";") ^^ FRule
+    lid ~ ("(" ~> repsep(lid, ",") <~ ")") ~ ("=" ~> term <~ ";") ^^ FRule.apply
 
   def gRule: SLLParsers.Parser[GRule] =
-    lid ~ ("(" ~> pat) ~ (rep("," ~> lid) <~ ")") ~ ("=" ~> term <~ ";") ^^ GRule
+    lid ~ ("(" ~> pat) ~ (rep("," ~> lid) <~ ")") ~ ("=" ~> term <~ ";") ^^ GRule.apply
 
   def ctrArgs: SLLParsers.Parser[List[Term]] =
     opt("(" ~> repsep(term, ",") <~ ")") ^^ {

@@ -35,7 +35,7 @@ class BasicTreeBuilder(task: Task) {
     case None =>
       term
     case Some(c) =>
-      val cargs = c.pat.params.map(Var)
+      val cargs = c.pat.params.map(Var.apply)
       val subst = Map(c.n -> Ctr(c.pat.name, cargs))
       applySubst(subst)(term)
   }
@@ -56,7 +56,7 @@ class BasicTreeBuilder(task: Task) {
         for (g <- getGs(name)) yield {
           val p1 = g.pat.copy(params = g.pat.params.map(ng.freshName))
           val c = Some(Contraction(v.name, p1))
-          val cargs1 = p1.params.map(Var)
+          val cargs1 = p1.params.map(Var.apply)
           val args1 = args.map(applyContr(c))
           val subst = Map(g.allParams.zip(cargs1 ::: args1): _*)
           (applySubst(subst)(g.term), c)

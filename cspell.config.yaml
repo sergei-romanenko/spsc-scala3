@@ -1,0 +1,18 @@
+version: "0.2"
+ignorePaths: []
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - cargs
+  - combinators
+  - fargs
+  - gname
+  - msgen
+  - paiges
+  - repsep
+  - scalac
+  - scalactic
+  - scalatest
+  - spsc
+ignoreWords: []
+import: []
