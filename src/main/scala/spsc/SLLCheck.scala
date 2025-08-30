@@ -32,12 +32,12 @@ class SLLCheck(val task: Task):
   // Disjointness of name sets.
 
   def fgIntersection: Option[Msg] =
-    for f <- fNames.intersect(gNames).headOption yield
-      s"$f is both f- and g-function"
+    for f <- fNames.intersect(gNames).headOption
+    yield s"$f is both f- and g-function"
 
   def hpIntersection: Option[Msg] =
-    for f <- hNames.intersect(pNames).headOption yield
-      s"$f is both a function and a parameter"
+    for f <- hNames.intersect(pNames).headOption
+    yield s"$f is both a function and a parameter"
 
   // Collecting variable names.
 
@@ -57,11 +57,11 @@ class SLLCheck(val task: Task):
 
   def rnFRule(fRule: FRule): Option[Msg] =
     for n <- repeatedName(fRule.params)
-      yield s"$n is repeated in the parameters of ${fRule.name}"
+    yield s"$n is repeated in the parameters of ${fRule.name}"
 
   def rnGRule(gRule: GRule): Option[Msg] =
     for n <- repeatedName(gRule.allParams)
-      yield s"$n is repeated in the parameters of ${gRule.name}"
+    yield s"$n is repeated in the parameters of ${gRule.name}"
 
   def rnTask: Option[Msg] =
     fRules.flatMap(rnFRule).headOption orElse
@@ -72,7 +72,7 @@ class SLLCheck(val task: Task):
   def rcGRules(name: Name): Option[Msg] =
     val cs = for r <- gRules if name == r.name yield r.pat.name
     for c <- repeatedName(cs)
-      yield s"In the definition of $name, $c appears twice in the patterns"
+    yield s"In the definition of $name, $c appears twice in the patterns"
 
   def rcTask: Option[Msg] =
     gNames.flatMap(rcGRules).headOption
@@ -82,14 +82,14 @@ class SLLCheck(val task: Task):
   def pvFRule(fRule: FRule): Option[Msg] =
     val ps = fRule.params
     val vs = vTerm(fRule.term)
-    for v <- vs.find(!ps.contains(_)) yield
-      s"In the definition of ${fRule.name}, $v is not a parameter"
+    for v <- vs.find(!ps.contains(_))
+    yield s"In the definition of ${fRule.name}, $v is not a parameter"
 
   def pvGRule(gRule: GRule): Option[Msg] =
     val ps = gRule.allParams
     val vs = vTerm(gRule.term)
-    for v <- vs.find(!ps.contains(_)) yield
-      s"In the definition of ${gRule.name}, $v is not a parameter"
+    for v <- vs.find(!ps.contains(_))
+    yield s"In the definition of ${gRule.name}, $v is not a parameter"
 
   def pvTask: Option[Msg] =
     fRules.flatMap(pvFRule).headOption orElse
@@ -114,18 +114,18 @@ class SLLCheck(val task: Task):
     fTerm(term).find(!fNames.contains(_))
 
   def uFRule(fRule: FRule): Option[Msg] =
-    for f <- dTerm(fRule.term) yield
-      s"In the definition of ${fRule.name}" +
-        s", there is a call to an undefined function $f"
+    for f <- dTerm(fRule.term)
+    yield s"In the definition of ${fRule.name}" +
+      s", there is a call to an undefined function $f"
 
   def uGRule(gRule: GRule): Option[Msg] =
-    for f <- dTerm(gRule.term) yield
-      s"In the definition of ${gRule.name}" +
-        s", there is a call to an undefined function $f"
+    for f <- dTerm(gRule.term)
+    yield s"In the definition of ${gRule.name}" +
+      s", there is a call to an undefined function $f"
 
   def uTerm(term: Term): Option[Msg] =
-    for f <- dTerm(term) yield
-      s"In the initial term, there is a call to an undefined function $f"
+    for f <- dTerm(term)
+    yield s"In the initial term, there is a call to an undefined function $f"
 
   def uTask: Option[Msg] =
     fRules.flatMap(uFRule).headOption orElse
@@ -165,8 +165,7 @@ trait ArChecker:
         ar += (name -> k)
         None
       case Some(k1) =>
-        if k == k1 then
-          None
+        if k == k1 then None
         else Some(s"$name has inconsistent arity: $k and $k1")
 
 // Arities of constructors.
@@ -193,8 +192,11 @@ case class CArChecker() extends ArChecker:
   def caGRules(rs: List[GRule]): Option[Msg] =
     rs.flatMap(caGRule).headOption
 
-  def caTask(term: Term,
-             fRules: List[FRule], gRules: List[GRule]): Option[Msg] =
+  def caTask(
+      term: Term,
+      fRules: List[FRule],
+      gRules: List[GRule]
+  ): Option[Msg] =
     caTerm(term) orElse (caFRules(fRules) orElse caGRules(gRules))
 
 // Arities of functions.
@@ -225,7 +227,9 @@ case class HArChecker() extends ArChecker:
   def haGRules(gRules: List[GRule]): Option[Msg] =
     gRules.flatMap(haGRule).headOption
 
-  def haTask(term: Term,
-             fRules: List[FRule], gRules: List[GRule]): Option[Msg] =
+  def haTask(
+      term: Term,
+      fRules: List[FRule],
+      gRules: List[GRule]
+  ): Option[Msg] =
     haTerm(term) orElse (haFRules(fRules) orElse haGRules(gRules))
-

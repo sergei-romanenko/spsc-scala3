@@ -54,18 +54,27 @@ class BasicTreeBuilderTests extends AnyFunSuite {
   }
 
   test(testName = "103 GCallCtr") {
-    drStep(rules = pAddAcc, t = "gAddAcc(S(S(Z)),Z)",
-      expected = "(gAddAcc(S(Z),S(Z)),*)")
+    drStep(
+      rules = pAddAcc,
+      t = "gAddAcc(S(S(Z)),Z)",
+      expected = "(gAddAcc(S(Z),S(Z)),*)"
+    )
   }
 
   test(testName = "104 GCallVar") {
-    drStep(rules = pAddAcc, t = "gAddAcc(a,b)",
-      expected = "(b,a=Z)+(gAddAcc(x1,S(b)),a=S(x1))")
+    drStep(
+      rules = pAddAcc,
+      t = "gAddAcc(a,b)",
+      expected = "(b,a=Z)+(gAddAcc(x1,S(b)),a=S(x1))"
+    )
   }
 
   test(testName = "105 GCallGeneral") {
-    drStep(rules = pAddAcc, t = "gAddAcc(gAddAcc(a,b),c)",
-      expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(x1,S(b)),c),a=S(x1))")
+    drStep(
+      rules = pAddAcc,
+      t = "gAddAcc(gAddAcc(a,b),c)",
+      expected = "(gAddAcc(b,c),a=Z)+(gAddAcc(gAddAcc(x1,S(b)),c),a=S(x1))"
+    )
   }
 
 //  test(testName = "106 Let") {
@@ -76,7 +85,6 @@ class BasicTreeBuilderTests extends AnyFunSuite {
 //  }
 
   test(testName = "107 a a") {
-    drStep(pAdd, "gAdd(a,a)",
-      expected = "(Z,a=Z)+(S(gAdd(x1,S(x1))),a=S(x1))")
+    drStep(pAdd, "gAdd(a,a)", expected = "(Z,a=Z)+(S(gAdd(x1,S(x1))),a=S(x1))")
   }
 }

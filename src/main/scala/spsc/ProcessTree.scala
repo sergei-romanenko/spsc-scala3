@@ -9,9 +9,14 @@ import scala.collection.immutable.TreeMap
 case class Contraction(n: Name, pat: Pat):
   override def toString: String = s"$n=$pat"
 
-case class Node(nodeId: NodeId, term: Term, contr: Option[Contraction],
-                parent: Option[NodeId], children: List[NodeId],
-                back: Option[NodeId]):
+case class Node(
+    nodeId: NodeId,
+    term: Term,
+    contr: Option[Contraction],
+    parent: Option[NodeId],
+    children: List[NodeId],
+    back: Option[NodeId]
+):
 
   override def toString: String =
     val contr_s = if contr.isEmpty then "" else contr.get.toString
@@ -37,27 +42,26 @@ case class Tree(freeId: NodeId, getNode: NodeMap):
 
   def nodesAcc(node: Node, acc: LazyList[Node]): LazyList[Node] =
     val children = node.children.map(getNode)
-    node #:: children.foldRight(acc) (nodesAcc)
+    node #:: children.foldRight(acc)(nodesAcc)
 
   def nodes: LazyList[Node] =
     nodesAcc(getNode(0), LazyList.empty)
 
   def leaves: LazyList[Node] =
-  //nodes.filter(_.children.isEmpty)
     LazyList.from(getNode.values.filter(_.children.isEmpty))
 
   def funcNodes: LazyList[Node] = leaves.flatMap(_.back match {
-    case None => Nil
+    case None      => Nil
     case Some(bId) => List(getNode(bId))
   })
 
   // Finding unprocessed nodes.
 
   def isProcessed(n: Node): Boolean = n.term match
-    case _: Var => true
+    case _: Var                  => true
     case CFG(TKind.Ctr, _, args) => args.isEmpty
-    case _: CFG => n.back.isDefined
-    case _: Let => true
+    case _: CFG                  => n.back.isDefined
+    case _: Let                  => true
 
   def findAnUnprocessedNode: Option[Node] =
     leaves.find(!isProcessed(_))
@@ -65,7 +69,7 @@ case class Tree(freeId: NodeId, getNode: NodeMap):
   // Finding ancestors.
 
   def ancestors(n: Node): LazyList[Node] = getParent(n) match
-    case None => LazyList.empty
+    case None    => LazyList.empty
     case Some(p) => p #:: ancestors(p)
 
   def findFuncAncestor(n: Node): Option[Node] =
@@ -74,46 +78,40 @@ case class Tree(freeId: NodeId, getNode: NodeMap):
   def localAncestors(n: Node): LazyList[Node] = getParent(n) match
     case None => LazyList.empty
     case Some(p) =>
-      if aVarIsUnderAttack(p.term) then
-        LazyList.empty
-      else
-        p #:: localAncestors(p)
+      if aVarIsUnderAttack(p.term) then LazyList.empty
+      else p #:: localAncestors(p)
 
   def globalAncestors(n: Node): LazyList[Node] = getParent(n) match
     case None => LazyList.empty
     case Some(p) =>
-      if aVarIsUnderAttack(p.term) then
-        p #:: globalAncestors(p)
-      else
-        globalAncestors(p)
+      if aVarIsUnderAttack(p.term) then p #:: globalAncestors(p)
+      else globalAncestors(p)
 
   def findAMoreGeneralAncestor(b: Node): Option[Node] =
-    if aVarIsUnderAttack(b.term) then
-      globalAncestors(b).find(isMoreGeneral(b))
-    else
-      localAncestors(b).find(isMoreGeneral(b))
+    if aVarIsUnderAttack(b.term) then globalAncestors(b).find(isMoreGeneral(b))
+    else localAncestors(b).find(isMoreGeneral(b))
 
   def findAnEmbeddedAncestor(b: Node): Option[Node] =
     if aVarIsUnderAttack(b.term) then
       globalAncestors(b).find(isEmbeddedAncestor(b))
-    else
-      localAncestors(b).find(isEmbeddedAncestor(b))
+    else localAncestors(b).find(isEmbeddedAncestor(b))
 
   // -- Rewriting the tree.
 
-  // Fiding the ids of the subnodes (not including the node's id)/
+  // Finding the ids of the subnodes (not including the node's id)/
 
   def subnodeIds(n: Node): Set[NodeId] =
     val chIdSet = n.children.toSet
     val subIdSets = n.children.map(getNode andThen subnodeIds)
-    subIdSets.foldLeft(chIdSet) (_.union(_))
+    subIdSets.foldLeft(chIdSet)(_.union(_))
 
   def removeSubnodes(m: NodeMap, n: Node): NodeMap =
-    subnodeIds(n).foldLeft(m) (_ - _)
+    subnodeIds(n).foldLeft(m)(_ - _)
 
   def replaceSubtree(n: Node, term: Term): (Tree, Node) =
     val n1 = n.copy(term = term, children = Nil)
-    val tree1 = this.copy(getNode = removeSubnodes(getNode, n) + (n1.nodeId -> n1))
+    val tree1 =
+      this.copy(getNode = removeSubnodes(getNode, n) + (n1.nodeId -> n1))
     (tree1, n1)
 
   def addChildren(n: Node, cs: List[Branch]): Tree =
@@ -121,8 +119,8 @@ case class Tree(freeId: NodeId, getNode: NodeMap):
     val chIds = freeId until freeId1
     val n1 = n.copy(children = n.children ++ chIds)
     val chNodes =
-      for (nId1, (t1, c1)) <- chIds.zip(cs) yield
-        (nId1, Node(nId1, t1, c1, Some(n.nodeId), Nil, None))
+      for (nId1, (t1, c1)) <- chIds.zip(cs)
+      yield (nId1, Node(nId1, t1, c1, Some(n.nodeId), Nil, None))
     val getNode1 = getNode + (n1.nodeId -> n1) ++ chNodes
     this.copy(freeId = freeId1, getNode = getNode1)
 
@@ -135,7 +133,6 @@ case class Tree(freeId: NodeId, getNode: NodeMap):
     val cs = (term, None) :: bs.map({ case (_, t) => (t, None) })
     tree1.addChildren(n1, cs)
 
-
 object Tree:
 
   type NodeId = Int
@@ -145,7 +142,7 @@ object Tree:
   // We distinguish a specific category of expressions:
   // the ones that generate contractions in the process tree.
 
-  // This is used to distiguish "global" and "local" contrlol:
+  // This is used to distinguish "global" and "local" control:
   // expressions are compared only if they belong
   // to the same category (as defined by `aVarIsUnderAttack`).
 
@@ -153,12 +150,12 @@ object Tree:
     case GCall(_, arg :: args) =>
       aVarIsUnderAttack(arg)
     case Var(_) => true
-    case _ => false
+    case _      => false
 
   def isFGCall: Term => Boolean =
     case FCall(_, _) => true
     case GCall(_, _) => true
-    case _ => false
+    case _           => false
 
   def isMoreGeneral(b: Node)(a: Node): Boolean =
     isFGCall(a.term) && instOf(b.term, a.term)
@@ -176,13 +173,18 @@ object Tree:
         tns + v + pat.name ++ pat.params
 
   def treeNames(tree: Tree): Set[Name] =
-    tree.nodes.map(nodeNames).foldLeft(Set[Name]()) (_ ++ _)
+    tree.nodes.map(nodeNames).foldLeft(Set[Name]())(_ ++ _)
 
   // Initial tree.
 
   def create(term: Term): Tree =
-    val node0 = Node(nodeId = 0, term = term, contr = None,
-      parent = None, children = Nil, back = None)
+    val node0 = Node(
+      nodeId = 0,
+      term = term,
+      contr = None,
+      parent = None,
+      children = Nil,
+      back = None
+    )
     val getNode0 = new NodeMap() + (0 -> node0)
     new Tree(freeId = 1, getNode = getNode0)
-

@@ -6,8 +6,7 @@ class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task):
 
   val msgen = new MSGen(ng)
 
-  def abstractNode(t: Tree, a: Node, term: Term,
-                   bs: List[(Name, Term)]): Tree =
+  def abstractNode(t: Tree, a: Node, term: Term, bs: List[(Name, Term)]): Tree =
     t.decompose(a, term, bs)
 
   def splitNode(t: Tree, n: Node): Tree =
@@ -17,7 +16,6 @@ class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task):
         val term1 = term.copy(args = ns.map(Var.apply))
         val bs = ns.zip(term.args)
         t.decompose(n, term1, bs)
-
 
   def generalizeAlphaOrSplit(t: Tree, b: Node, a: Node): Tree =
     val g: Gen = msgen.msg(a.term, b.term)
@@ -41,4 +39,3 @@ class AdvancedTreeBuilder(task: Task) extends BasicTreeBuilder(task):
                 generalizeAlphaOrSplit(t, b, a)
               case None =>
                 driveNode(t, b)
-

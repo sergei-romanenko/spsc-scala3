@@ -20,18 +20,24 @@ class AlgebraTests extends AnyFunSuite {
     val e2 = parseTerm("E2")
     val e = parseTerm("Cons(x1,Cons(x2,Cons(x3,Nil())))")
     val subst = Map("x1" -> e1, "x2" -> e2)
-    assert(applySubst(subst)(e).toString
-      == "Cons(E1,Cons(E2,Cons(x3,Nil)))")
+    assert(
+      applySubst(subst)(e).toString
+        == "Cons(E1,Cons(E2,Cons(x3,Nil)))"
+    )
   }
 
   test(testName = "302 vars") {
     val t1 = parseTerm("A(x,B(y,z),a)")
-    assert(termVars(t1)
-      == List("x", "y", "z", "a"))
+    assert(
+      termVars(t1)
+        == List("x", "y", "z", "a")
+    )
 
     val t2 = parseTerm("A(x,B(y,x),a)")
-    assert(termVars(t2)
-      == List("x", "y", "a"))
+    assert(
+      termVars(t2)
+        == List("x", "y", "a")
+    )
   }
 
   def substToString(os: Option[Subst]): Option[String] =
@@ -99,14 +105,16 @@ class AlgebraTests extends AnyFunSuite {
 
   test(testName = "NameGen") {
     val ng = new NameGen(Seq("B2", "D5"))
-    assert(List("A", "B", "C", "D", "E").map(ng.freshName)
-      == List("A1", "B3", "C4", "D6", "E7"))
+    assert(
+      List("A", "B", "C", "D", "E").map(ng.freshName)
+        == List("A1", "B3", "C4", "D6", "E7")
+    )
   }
 
   test(testName = "taskNames") {
     val sTask = "a where f(x)=x; g(C(p),q) = f(R(p,q));"
     val task = SLLParsers.parseTask(sTask)
-    val ns = taskNames(task).toList.sortWith(_<_)
+    val ns = taskNames(task).toList.sortWith(_ < _)
     assert(ns.mkString(",") == "C,R,a,f,g,p,q,x")
   }
 }

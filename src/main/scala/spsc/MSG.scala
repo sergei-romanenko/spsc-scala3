@@ -28,9 +28,9 @@ class MSGen(val ng: NameGen):
           case (t1: CFG, t2: CFG) if shallowEq(t1, t2) =>
             val ns = t1.args.map(_ => ng.freshName(prefix = "v"))
             val t = applySubst(Map(n -> t1.copy(args = ns.map(Var.apply))))(g.t)
-            break(Gen(t,
-              g.m1 - n ++ ns.zip(t1.args),
-              g.m2 - n ++ ns.zip(t2.args)))
+            break(
+              Gen(t, g.m1 - n ++ ns.zip(t1.args), g.m2 - n ++ ns.zip(t2.args))
+            )
           case _ =>
       g
 
@@ -38,5 +38,7 @@ class MSGen(val ng: NameGen):
     boundary:
       for (n1, t1) <- gen.m1; (n2, t2) <- gen.m1 do
         if (n1 != n2 && t1 == t2) && (gen.m2(n1) == gen.m2(n2)) then
-          break(Gen(applySubst(Map(n1 -> Var(n2)))(gen.t), gen.m1 - n1, gen.m2 - n1))
+          break(
+            Gen(applySubst(Map(n1 -> Var(n2)))(gen.t), gen.m1 - n1, gen.m2 - n1)
+          )
       gen

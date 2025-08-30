@@ -45,12 +45,10 @@ object PrettyPrinter:
 
   def docChildren(tree: Tree, node: Node): Doc =
     val ns = node.children.map(tree(_))
-    if ns.isEmpty then
-      Doc.empty
+    if ns.isEmpty then Doc.empty
     else
       Doc.line +
         Doc.intercalate(Doc.line, for n <- ns yield docNode(tree, n))
 
   def ppTree(tree: Tree): String =
     docTree(tree).render(width = 80)
-

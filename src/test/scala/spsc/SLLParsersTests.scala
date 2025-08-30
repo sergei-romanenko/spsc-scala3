@@ -28,16 +28,16 @@ class SLLParsersTests extends AnyFunSuite {
 
   test(testName = "parseTask") {
 
-    pTask("a where f(x,y) = f(y, x);g(C(x),y) = g(y, x);",
-      "a where f(x,y)=f(y,x);g(C(x),y)=g(y,x);")
+    pTask(
+      "a where f(x,y) = f(y, x);g(C(x),y) = g(y, x);",
+      "a where f(x,y)=f(y,x);g(C(x),y)=g(y,x);"
+    )
 
     pTask("a where g(Z,y)= y;", "a where g(Z,y)=y;")
 
-    pTask("f(x) where f(x) = f(x);",
-      "f(x) where f(x)=f(x);")
+    pTask("f(x) where f(x) = f(x);", "f(x) where f(x)=f(x);")
 
-    pTask("h(Z) where h(Z) = h(Z);",
-      "h(Z) where h(Z)=h(Z);")
+    pTask("h(Z) where h(Z) = h(Z);", "h(Z) where h(Z)=h(Z);")
   }
 
 }

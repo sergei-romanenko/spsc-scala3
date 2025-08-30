@@ -11,11 +11,15 @@ class ResTaskGen(val tree: Tree):
 
   private val ng: NameGen = initNameGen
 
-  private val funcNodeIds : Set[NodeId] =
-    tree.leaves.flatMap(n => n.back match {
-      case None => Nil
-      case Some(backId) => backId :: Nil
-    }).toSet
+  private val funcNodeIds: Set[NodeId] =
+    tree.leaves
+      .flatMap(n =>
+        n.back match {
+          case None         => Nil
+          case Some(backId) => backId :: Nil
+        }
+      )
+      .toSet
 
   private val sigs =
     scala.collection.mutable.Map[NodeId, (Name, List[Var])]()
@@ -24,24 +28,24 @@ class ResTaskGen(val tree: Tree):
 
   private def walk(n: Node): Term =
     val fa = tree.findFuncAncestor(n)
-    if fa.isEmpty then (n.term: @unchecked) match
-      case v: Var => v
-      case Let(_, bs) =>
-        val body = walk(tree(n.children.head))
-        val ks = bs map { case (k, _) => k }
-        val ts = n.children.tail.map(tree(_)).map(walk)
-        applySubst(Map(ks zip ts*))(body)
-      case Ctr(name, _) => Ctr(name, n.children.map(tree(_)).map(walk))
-      case FCall(name, args) => walkCall(n, name, args)
-      case GCall(name, args) => walkCall(n, name, args)
+    if fa.isEmpty then
+      (n.term: @unchecked) match
+        case v: Var => v
+        case Let(_, bs) =>
+          val body = walk(tree(n.children.head))
+          val ks = bs map { case (k, _) => k }
+          val ts = n.children.tail.map(tree(_)).map(walk)
+          applySubst(Map(ks zip ts*))(body)
+        case Ctr(name, _)      => Ctr(name, n.children.map(tree(_)).map(walk))
+        case FCall(name, args) => walkCall(n, name, args)
+        case GCall(name, args) => walkCall(n, name, args)
     else
       val q = fa.get
       val (name, args) = sigs(q.nodeId)
       val subst = matchAgainst(q.term, n.term).get
       if tree(q.children.head).contr.isEmpty then
         applySubst(subst)(FCall(name, args))
-      else
-        applySubst(subst)(GCall(name, args))
+      else applySubst(subst)(GCall(name, args))
 
   def walkCall(n: Node, name: Name, args: List[Term]): Term =
     val ns = termVars(n.term)
@@ -50,7 +54,7 @@ class ResTaskGen(val tree: Tree):
       val (gname, _) =
         sigs.getOrElseUpdate(n.nodeId, (ng.freshName(name), vs))
       for cn <- n.children.map(tree(_)) do
-          defs += GRule(gname, cn.contr.get.pat, ns.tail, walk(cn))
+        defs += GRule(gname, cn.contr.get.pat, ns.tail, walk(cn))
       GCall(gname, vs)
     else if funcNodeIds.contains(n.nodeId) then
       val (fname, fargs) =
@@ -60,5 +64,4 @@ class ResTaskGen(val tree: Tree):
     else walk(tree(n.children.head))
 
   def buildResTask(): Task =
-    Task(walk(tree(0)), defs.toList.sortWith(
-      (r1, r2) => r1.name < r2.name))
+    Task(walk(tree(0)), defs.toList.sortWith((r1, r2) => r1.name < r2.name))

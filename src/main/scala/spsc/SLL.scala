@@ -10,19 +10,17 @@ sealed abstract class Term
 case class Var(name: Name) extends Term:
   override def toString: String = name
 
-object TKind extends Enumeration:
-  val Ctr, FCall, GCall = Value
+enum TKind:
+  case Ctr, FCall, GCall
 
-case class CFG(kind: TKind.Value, name: Name, args: List[Term]) extends Term:
+case class CFG(kind: TKind, name: Name, args: List[Term]) extends Term:
 
   override def toString: String =
-    if kind == TKind.Ctr && args.isEmpty then
-      name
-    else
-      name + args.mkString("(", ",", ")")
+    if kind == TKind.Ctr && args.isEmpty then name
+    else name + args.mkString("(", ",", ")")
 
-sealed abstract class CFGObject(kind: TKind.Value)
-  extends Function2[Name, List[Term], CFG]:
+sealed abstract class CFGObject(kind: TKind)
+    extends Function2[Name, List[Term], CFG]:
 
   def apply(name: Name, args: List[Term]) = CFG(kind, name, args)
 
@@ -42,10 +40,8 @@ case class Let(term: Term, bindings: List[(Name, Term)]) extends Term:
 
 case class Pat(name: Name, params: List[Name]):
   override def toString: String =
-    if params.isEmpty then
-      name
-    else
-      name + params.mkString("(", ",", ")")
+    if params.isEmpty then name
+    else name + params.mkString("(", ",", ")")
 
 sealed abstract class Rule:
   def name: Name
@@ -54,8 +50,8 @@ case class FRule(name: Name, params: List[Name], term: Term) extends Rule:
   override def toString: String =
     s"$name${params.mkString("(", ",", ")")}=$term;"
 
-case class GRule(name: Name, pat: Pat, params: List[Name],
-                 term: Term) extends Rule:
+case class GRule(name: Name, pat: Pat, params: List[Name], term: Term)
+    extends Rule:
   val allParams: List[Name] = pat.params ::: params
 
   override def toString: String =

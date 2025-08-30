@@ -24,14 +24,18 @@ object Algebra:
   def termVars(term: Term): List[Name] = (term: @unchecked) match
     case v: Var => List(v.name)
     case t: CFG =>
-      t.args.foldLeft(List[Name]()) { (ns, term) => (ns ::: termVars(term)).distinct }
+      t.args.foldLeft(List[Name]()) { (ns, term) =>
+        (ns ::: termVars(term)).distinct
+      }
 
   def termNames: Term => Set[Name] =
     case Var(name) => Set(name)
     case CFG(kind, name, args) =>
-      args.map(termNames).foldLeft(Set(name)) (_ ++ _)
+      args.map(termNames).foldLeft(Set(name))(_ ++ _)
     case Let(term0, bs) =>
-      bs.map(_._2).map(termNames).foldLeft((termNames(term0) ++ bs.map(_._1))) (_ ++ _)
+      bs.map(_._2)
+        .map(termNames)
+        .foldLeft((termNames(term0) ++ bs.map(_._1)))(_ ++ _)
 
   def ruleNames: Rule => Set[Name] =
     case FRule(name, params, term) =>
@@ -40,16 +44,17 @@ object Algebra:
       Set(name) + pat.name ++ pat.params ++ params ++ termNames(term)
 
   def taskNames(task: Task): Set[Name] =
-    task.rules.map(ruleNames).foldLeft(termNames(task.term)) (_ ++ _)
+    task.rules.map(ruleNames).foldLeft(termNames(task.term))(_ ++ _)
 
   def matchLoop(m: Subst): List[(Term, Term)] => Option[Subst] =
     case Nil =>
       Some(m)
     case hd :: tl =>
       hd match
-        case (v: Var, t2) => m.get(v.name) match
-          case None => matchLoop(m + (v.name -> t2))(tl)
-          case Some(t0) => if t2 == t0 then matchLoop(m)(tl) else None
+        case (v: Var, t2) =>
+          m.get(v.name) match
+            case None     => matchLoop(m + (v.name -> t2))(tl)
+            case Some(t0) => if t2 == t0 then matchLoop(m)(tl) else None
         case (t1: CFG, t2: CFG) if shallowEq(t1, t2) =>
           matchLoop(m)((t1.args zip t2.args) ::: tl)
         case _ => None
@@ -63,7 +68,6 @@ object Algebra:
   def equiv(t1: Term, t2: Term): Boolean =
     instOf(t1, t2) && instOf(t2, t1)
 
-
 // Generating variable names.
 
 class NameGen(val reserved: Seq[Name]):
@@ -74,8 +78,7 @@ class NameGen(val reserved: Seq[Name]):
   final def freshName(prefix: String): Name =
     i += 1
     val name = prefix + i
-    if used.contains(name) then
-      freshName(prefix)
+    if used.contains(name) then freshName(prefix)
     else
       used += name
       name
